@@ -1,34 +1,6 @@
-def sort_rub_kg(arr):
-    #  Сортировка по цене за килограмм
-    arr2 = []
-    n = len(arr)
-    for i in range(n):
-        max = arr[0]
-        for j in arr:
-            if j[2] > max[2]:
-                max = j
-        arr2.append(max)
-        arr.pop(arr.index(max))
-    return arr2
-
-
-def sort_max_rub(arr):
-    #  Сортировка по цене
-    arr2 = []
-    n = len(arr)
-    for i in range(n):
-        max = arr[0]
-        for j in arr:
-            if j[1] > max[1]:
-                max = j
-        arr2.append(max)
-        arr.pop(arr.index(max))
-    return arr2
-
-
-n = int(input('N: '))  # количсетво экспонатов
-m = int(input('M: '))  # количество заходов
-k = int(input('K: '))  # килограмм за один заход
+n = int(input('(количество экспонатов) N: '))  # количсетво экспонатов
+m = int(input('(количество заходов) M: '))  # количество заходов
+k = int(input('(килограмм за заход) K: '))  # килограмм за один заход
 arr = []
 
 #  Ввод данных об экспонатах
@@ -38,25 +10,42 @@ for i in range(n):
     b[0] = int(a[0])
     b[1] = int(a[1])
     arr.append(b)
-    arr[i].append(arr[i][1] / arr[i][0])
 print(arr)
 
-arr1 = sort_rub_kg(arr)
-arr2 = sort_max_rub(arr)
-summ = 0
-
-for i in range(m):
-    summ1 = 0
-    summ2 = 0
-    print('Заход ' + str(i + 1))
-    temp_arr = arr
-    temp_k = k
-    for j in temp_arr:
-        if j[0] <= temp_k:
-            print(j)
-            temp_k -= j[0]
-            arr.pop(arr.index(j))
-            summ += j[1]
-
-print(summ)
-
+summa = 0
+for h in range(m):  # Проходимся по количеству заходов
+    if arr:
+        work_list = []
+        print('Заход ' + str(h + 1))
+        work_list.append([])
+        for j in range(k):
+            if j + 1 >= arr[0][0]:
+                work_list[0].append([arr[0][1], [arr[0]]])
+            else:
+                work_list[0].append([0, []])
+        for i in range(1, len(arr)):  # проходимся по ещё не взятым экспонатам
+            work_list.append([])
+            for j in range(k):  # проходимся по количеству килограммов до К
+                if i != 0:
+                    if j + 1 < arr[i][0]:
+                        work_list[i].append(work_list[i-1][j])
+                    elif j + 1 == arr[i][0]:
+                        if work_list[i-1][j][0] > arr[i][1]:
+                            work_list[i].append(work_list[i-1][j])
+                        else:
+                            work_list[i].append([arr[i][1], [arr[i]]])
+                    else:
+                        if work_list[i-1][j][0] > arr[i][1] + work_list[i-1][j-arr[i][0]][0]:
+                            work_list[i].append(work_list[i-1][j])
+                        else:
+                            temp = []
+                            for o in work_list[i-1][j-arr[i][0]][1]:
+                                temp.append(o)
+                            temp.append(arr[i])
+                            work_list[i].append([arr[i][1] + work_list[i-1][j-arr[i][0]][0], temp])
+        summa += work_list[len(work_list) - 1][k - 1][0]
+        for i in work_list[len(work_list) - 1][k - 1][1]:
+            print(i)
+            arr.pop(arr.index(i))
+        print('Всего в этом заходе сумма: ' + str(work_list[len(work_list) - 1][k - 1][0]))
+print('Общая сумма: ' + str(summa))
