@@ -1,13 +1,25 @@
-def propusk(mas):
-    """ функция для поиска наименьшего пропущенного числа """
+import math
 
-    pros = set()
-    for i in mas:
-        if i in pros:
-            pros.remove(i)
-        if i + 2 not in pros:
-            pros.add(i+1)
-    return min(pros)
+mas = [6, 2, 4, 1, 11, 8, 3]
+print(mas)
 
+result = math.inf
+mn = min(mas)
+mx = max(mas)
+b = []
+d = dict()
+for element in mas:
+    d[element] = 1
+for i in mas:
+    if i != mn and i != mx:
+        b.append(i - 1)
+        b.append(i + 1)
+    elif i == mn:
+        b.append(i + 1)
+    else:
+        b.append(i - 1)
+for element in b:
+    if element not in d:
+        result = min(result, element)
 
-print(propusk([6, 2, 4, 1, 11, 8, 3]))
+print("Наименьшее пропущенное целое: " + str(result))
